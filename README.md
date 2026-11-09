@@ -2,177 +2,173 @@
 
 # PeopleFlow HRMS
 
-### Human Resource Management System | B.Tech Portfolio Project
+### C++17 · SQLite · Role-Based Access · Web Dashboard
 
-**An interactive HR workspace for employee records, attendance, leave requests, and role-based workflows.**
+**Human Resource Management System — B.Tech Portfolio Project**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-0d9488?style=for-the-badge)](https://gargv1529-boop.github.io/peopleflow-hrms/)
-[![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
-[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![C++17](https://img.shields.io/badge/Language-C%2B%2B17-00599C?style=for-the-badge)](https://isocpp.org/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?style=for-the-badge)](https://www.sqlite.org/)
 
-**[Explore Live Demo](https://gargv1529-boop.github.io/peopleflow-hrms/) · [GitHub Repository](https://github.com/gargv1529-boop/peopleflow-hrms)**
+**[Interactive Portfolio Demo](https://gargv1529-boop.github.io/peopleflow-hrms/) · [Source Code](https://github.com/gargv1529-boop/peopleflow-hrms)**
 
 </div>
 
----
+## Project overview
 
-## Overview
+PeopleFlow HRMS is a learning-focused human resource application demonstrating employee record management, attendance, leave approval, and role-based permissions using a local **C++17 HTTP backend**, a **SQLite database**, and a responsive **HTML/CSS/JavaScript** interface.
 
-**PeopleFlow HRMS** is a human resource management project that brings employee records, attendance, leave workflows, and workforce insights into one responsive dashboard. It was developed as a learning and portfolio project using **C++17, SQLite, HTML, CSS, and JavaScript**.
+This repository includes **two different experiences**:
 
-The project has **two distinct versions**:
+1. **Public GitHub Pages demo (`docs/`)** — browser-only, interactive simulation with fictional employees and simulated Admin/HR/Employee permissions. It does **not** connect to a live server or SQLite database.
+2. **Local full-stack application (`src/`, `web/`)** — C++ server running on `127.0.0.1:8765` with SQLite persistence, server-side authorization, login sessions, and role-specific operations. This is *not* publicly hosted.
 
-- **Public web demo (this repository):** An interactive, browser-only preview published through GitHub Pages. It uses fictional employees and simulated Admin, HR, and Employee accounts. Changes are saved only within the visitor's browser session, not in a shared database.
-- **Local full-stack application (companion project):** A C++17 web server and SQLite-backed application with backend role checks, authentication, employee management, attendance, and leave workflows. **The backend source is not yet included in this public repository**; it runs separately on the developer's computer.
-
-> **Important:** The GitHub Pages demo is a functional *front-end simulation*, not a deployed C++/SQLite backend or production authentication system.
+> The public demo shows the UI and workflows. The C++ source demonstrates how the local database-backed version is implemented. Neither is intended as production HR software.
 
 ## Features
 
-| Module | Capabilities |
+| Area | Local C++ + SQLite application |
 | --- | --- |
-| **Dashboard** | Employee count, department distribution, payroll estimates, and pending leave summaries |
-| **Employee directory** | View, search, add, edit, and remove employee records in the interactive demo |
-| **Attendance** | Mark attendance and inspect attendance information |
-| **Leave management** | Submit requests and explore approval/rejection workflows |
-| **Role-based experience** | Separate Admin, HR, and Employee views and permitted actions in the demo |
-| **Responsive design** | Browser-based interface for desktop and smaller screens |
-| **Local database application** | SQLite persistence and C++ server-side access checks in the separate local version |
+| Accounts | Admin, HR and Employee login with role checks on the server |
+| Employees | Add, view, search, update and remove records |
+| Attendance | Record and view attendance; employees see their own records |
+| Leave requests | Submit, approve and reject requests with permissions |
+| Dashboard | Team headcount, departments, payroll estimates and pending leaves |
+| Data persistence | SQLite tables for employees, attendance, leaves and users |
+| Passwords | Salted PBKDF2-HMAC-SHA256 hashing using OpenSSL |
+| Tests | C++ HRMS core tests run with CTest / GitHub Actions |
 
-## Technology Stack
+## Technology stack
 
-| Layer | Technology | Purpose |
-| --- | --- | --- |
-| Core application | **C++17** | Backend and HRMS business logic in the local version |
-| Database | **SQLite** | Persistent local employee, attendance, leave, and account records |
-| Local authentication | **OpenSSL + C++** | Password hashing and session-based authentication in the local version |
-| Frontend | **HTML5, CSS3, JavaScript** | Responsive login page, dashboard, forms, and interactive views |
-| Public hosting | **GitHub Pages** | Hosting the static, browser-only portfolio preview |
-| Version control | **Git and GitHub** | Code management and portfolio presentation |
+**C++17**, STL, SQLite3, OpenSSL, CMake, GCC / MSYS2, HTML5, CSS3, JavaScript, Git and GitHub Pages.
 
-## Live Demo
+### Architecture
 
-**Website:** https://gargv1529-boop.github.io/peopleflow-hrms/
+```text
+Local full-stack app
+Browser (web/) ──HTTP requests──> C++ server (src/web_server.cpp)
+                                       │
+                      Authentication, authorization & HRMS rules
+                                       │
+                                 SQLite database
+                              (data/peopleflow.db)
 
-Use any of these **public demo-only** accounts:
+Public portfolio preview
+GitHub Pages (docs/) ──> Static HTML/CSS/JS ──> Fictional browser-only data
+```
 
-| Role | Email | Password |
+## Try the public demo
+
+**[Open PeopleFlow HRMS](https://gargv1529-boop.github.io/peopleflow-hrms/)**
+
+| Demo role | Email | Password |
 | --- | --- | --- |
 | Admin | `admin@peopleflow.demo` | `Demo@123` |
 | HR | `hr@peopleflow.demo` | `Demo@123` |
 | Employee | `employee@peopleflow.demo` | `Demo@123` |
 
-**Suggested walkthrough:** Sign in as Admin → explore the Overview and Employees pages → try the Attendance and Leave requests screens → sign out and compare the Employee view.
+The demo uses fictional records. These are *simulation credentials only*. Changes made in the public demo are local to the browser and do not update any database.
 
-The preview starts with **five fictional employee records**. Data modifications are simulated within the browser session and do not affect other visitors or the developer's SQLite database. Demo credentials are public by design; **never reuse them for real accounts**.
+## Run the full C++ application on Windows
 
-## Screenshots
+1. Install [MSYS2](https://www.msys2.org/) and open **MSYS2 UCRT64**.
+2. Install build dependencies:
 
-The interface includes a login screen, department and payroll dashboard, employee directory, attendance records, and leave-request views.
+   ```bash
+   pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-sqlite3 mingw-w64-ucrt-x86_64-openssl
+   ```
 
-**To add screenshots to this README:** Capture the public demo using fictional records, save images to `docs/screenshots/` (for example, `login.png`, `dashboard.png`, and `employees.png`), then add the following Markdown after uploading them:
+3. Clone this repo and open the **repository root** in VS Code.
+4. In a PowerShell terminal, run:
 
-```markdown
-![PeopleFlow login screen](docs/screenshots/login.png)
-![PeopleFlow HR dashboard](docs/screenshots/dashboard.png)
-![Employee directory](docs/screenshots/employees.png)
+   ```powershell
+   .\run_dashboard_windows.bat
+   ```
+
+5. Open **http://127.0.0.1:8765** and keep the server terminal running.
+
+The first local launch creates `data/peopleflow.db` with *demo-only* Admin/HR accounts. New installations may have no employees yet; add a fictional employee and create a linked Employee login from the Admin interface. Default demo passwords are `Demo@123` **for local learning only**. Change passwords and do not use real personal records.
+
+The console-only app remains available via `run_windows.bat`. It uses separate legacy text files and is not the same storage as the SQLite dashboard.
+
+### Linux / CMake (developers)
+
+```bash
+sudo apt-get install cmake g++ libsqlite3-dev libssl-dev
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+./build/peopleflow_web
 ```
 
-## Run the Public Demo Locally
+Launch the server from the repository root because it serves `web/` and stores data in `data/` relative to the working directory.
 
-The files in `docs/` are static and require **no C++ compiler or SQLite database**.
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/gargv1529-boop/peopleflow-hrms.git
-   cd peopleflow-hrms
-   ```
-
-2. If Python is installed, start a local static server:
-
-   ```bash
-   python -m http.server 8000 --directory docs
-   ```
-
-   On Windows, `py -m http.server 8000 --directory docs` may be used instead.
-
-3. Open **http://localhost:8000** in your browser and sign in with a demo account above.
-
-You can also use the hosted **[GitHub Pages demo](https://gargv1529-boop.github.io/peopleflow-hrms/)** without downloading anything.
-
-## Repository Structure
+## Repository structure
 
 ```text
 peopleflow-hrms/
-├── docs/
-│   ├── index.html        # Public demo page and interface markup
-│   ├── styles.css        # Layout, colors, and responsive design
-│   ├── app.js            # Browser-based demo logic and fictional data
-│   └── .nojekyll         # GitHub Pages static-site configuration
-├── README.md             # Project documentation
-├── .gitignore
-└── .gitattributes
+├── docs/                       # Public simulated GitHub Pages site
+│   ├── index.html
+│   ├── app.js
+│   ├── styles.css
+│   └── .nojekyll
+├── src/
+│   ├── Database.cpp/.hpp       # SQLite, accounts, password hashing, import
+│   ├── HRMS.cpp/.hpp           # HRMS domain logic and legacy support
+│   ├── web_server.cpp          # Local REST-like API and role enforcement
+│   └── main.cpp                # Legacy console app
+├── web/                        # Local C++ dashboard frontend
+├── tests/test_hrms.cpp         # C++ core tests
+├── data/.gitkeep               # Database created locally; never committed
+├── .github/workflows/ci.yml    # Build and test automation
+├── CMakeLists.txt
+├── run_dashboard_windows.bat
+├── run_dashboard_unix.sh
+├── run_windows.bat
+├── run_unix.sh
+└── README.md
 ```
 
-*The local C++ and SQLite source is a companion project and is not part of the repository structure shown above.*
+## Role permissions (local application)
 
-## Architecture
+| Capability | Admin | HR | Employee |
+| --- | :---: | :---: | :---: |
+| View all employee records | Yes | Yes | No; own record only |
+| Create, edit or delete employee records | Yes | Yes | No |
+| Mark attendance | Yes | Yes | No |
+| View own attendance | Yes | Yes | Yes |
+| Submit leave request | Yes | Yes | Own request only |
+| Approve or reject leave | Yes | Yes | No |
+| Manage user accounts | Yes | No | No |
 
-**Public demo**
+## Screenshots
 
-```text
-GitHub Pages (static hosting)
-            |
-HTML + CSS + JavaScript
-            |
-Fictional sample data + browser session storage
-            |
-Admin / HR / Employee simulated workflows
+Add screenshots of the **fictional public demo** to `docs/screenshots/` and reference them here:
+
+```markdown
+![PeopleFlow login page](docs/screenshots/login.png)
+![PeopleFlow dashboard](docs/screenshots/dashboard.png)
+![PeopleFlow employee directory](docs/screenshots/employees.png)
 ```
 
-**Separate local application**
+Do not publish screenshots showing real employee data.
 
-```text
-Web browser
-    |
-C++17 HTTP application (localhost)
-    |
-Authentication + role checks + HRMS logic
-    |
-SQLite database (local persistent storage)
-```
+## Security and responsible use
 
-The public preview intentionally **does not contact or expose** the local application or database.
+- **Local demo only:** the C++ server binds to loopback (`127.0.0.1`) and is not hardened for internet exposure.
+- **Fixed demo credentials** exist for convenient local evaluation; do not deploy this backend unchanged on a public server.
+- Never commit `data/peopleflow.db`, `.db-wal`/`.db-shm`, real employee text files, API secrets or private keys. The included `.gitignore` excludes them, but review staged files manually.
+- A production deployment needs security review, HTTPS, stronger authentication safeguards, audit logs, backup/recovery controls, input validation hardening and operational monitoring.
+- Payroll numbers are illustrative estimates; this is not a statutory payroll system.
 
-## Security & Limitations
+## Future enhancements
 
-- This is an **educational portfolio project**, not production HR or payroll software.
-- Demo role switching is simulated in JavaScript. It should **not** be interpreted as real server-enforced authorization.
-- Public sample data is fictional. Do not add real employee names, payroll information, passwords, or `.db` files to the repository.
-- The local C++ server is intended for `localhost` development. It has not been hardened for internet deployment and should not be exposed directly to the public internet.
-- Payroll totals in the dashboard are **illustrative estimates**, not a complete payroll calculation or statutory compliance engine.
+Email invitations, leave balances, payroll export, audit trails, finer-grained access permissions, more automated integration/browser tests, and production deployment hardening.
 
-## Future Improvements
+## Resume-ready summary
 
-- Publish the sanitized C++/SQLite backend source with reproducible build instructions and automated tests.
-- Add audit logging and CSV/PDF report exports.
-- Implement stronger session management, password reset, rate limiting, and deployment hardening.
-- Add automated browser tests and CI/CD checks.
-- Expand attendance, payroll, and leave-policy capabilities.
-
-## Portfolio Summary
-
-**PeopleFlow HRMS | C++17, SQLite, HTML, CSS, JavaScript**
-
-Built a local HR management application featuring employee records, attendance, leave workflows, and role-based access. Created and published a responsive, interactive GitHub Pages preview using fictional sample data so recruiters can explore the interface without installing the C++ backend.
+**PeopleFlow HRMS | C++17, SQLite, OpenSSL, HTML, CSS, JavaScript** — Built a local database-backed HR management application featuring employee records, attendance, leave approvals, authentication, and role-based authorization. Published a separate interactive browser demo using GitHub Pages for portfolio review.
 
 ---
 
-<div align="center">
-
-**[Try the interactive demo](https://gargv1529-boop.github.io/peopleflow-hrms/)**
-
-*Developed as a learning project with AI assistance. The source and behavior should be reviewed and understood before representing the implementation as independent work.*
-
-</div>
+*Learning project built with AI assistance. Review, understand and personalize the code before presenting it as independently authored.*
