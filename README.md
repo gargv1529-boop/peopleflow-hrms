@@ -172,3 +172,17 @@ Email invitations, leave balances, payroll export, audit trails, finer-grained a
 ---
 
 *Learning project built with AI assistance. Review, understand and personalize the code before presenting it as independently authored.*
+
+## Project Screenshots
+
+### Login Page
+![Login Page](screenshots/login.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/dashboard.png)
+
+### Employee Management
+![Employee Management](screenshots/employees.png)
+
+### Attendance Management
+![Attendance Management](screenshots/attendance.png)
