@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>PeopleFlow — HR Workspace</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="demo-banner" role="note">PUBLIC PORTFOLIO PREVIEW &nbsp;·&nbsp; Fictional sample data &nbsp;·&nbsp; Browser-only simulation; full C++ / SQLite source is in GitHub</div>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 15l2 2 5-5"/></symbol>
+  <symbol id="i-leave" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="17" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h8M8 18h5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-8M15 7h6v6"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7M14 10v7"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+</svg>
+
+<div id="login-view" class="login-shell">
+  <section class="login-art">
+    <div class="art-noise"></div>
+    <div class="brand brand-light"><span class="brand-mark">✦</span><span>peopleflow<span class="brand-dot">.</span></span></div>
+    <div class="art-center">
+      <div class="art-kicker"><span class="kicker-dot"></span> HUMAN RESOURCES, REIMAGINED</div>
+      <h1>A better way to<br>work <em>together.</em></h1>
+      <p>Bring your people, processes, and progress into one thoughtfully designed workspace.</p>
+      <div class="art-preview">
+        <div class="art-preview-header"><span class="dot green"></span><span class="dot yellow"></span><span class="dot blue"></span><span class="mini-label">Your people at a glance</span></div>
+        <div class="preview-content"><div class="preview-icon">↗</div><div><span class="preview-caption">Your team is growing</span><strong>People first. Always.</strong></div><div class="preview-avatars"><span>AK</span><span>RS</span><span>MD</span></div></div>
+      </div>
+    </div>
+    <div class="art-bottom">Made for teams that care about people. <span>✳</span></div>
+  </section>
+  <section class="login-panel">
+    <div class="login-mobile-brand"><span class="brand-mark">✦</span> peopleflow.</div>
+    <div class="login-form-wrap">
+      <div class="eyebrow">WELCOME BACK</div>
+      <h2>Sign in to your<br>workspace<span class="accent-dot">.</span></h2>
+      <p class="subheading">Enter your details to continue managing your team.</p>
+      <form id="login-form">
+        <label for="login-email">Work email</label>
+        <input id="login-email" name="email" type="email" value="admin@peopleflow.demo" required autocomplete="username" placeholder="you@company.com">
+        <div class="label-line"><label for="login-password">Password</label><span class="hint">Demo environment</span></div>
+        <input id="login-password" name="password" type="password" value="Demo@123" required autocomplete="current-password" placeholder="Enter your password">
+        <p id="login-error" class="form-error" role="alert" hidden></p>
+        <button class="button primary login-submit" type="submit">Sign in to dashboard <span>→</span></button>
+      </form>
+      <div class="demo-note"><span class="note-icon">i</span><span><b>Interactive portfolio preview</b><br>Choose Admin, HR or Employee. All demo passwords: Demo@123. This is a browser-only simulation with fictional records, not the live C++/SQLite server.</span></div>
+    </div>
+    <div class="login-footer">© 2026 PeopleFlow <span>•</span> C++17 + SQLite source · browser-only preview</div>
+  </section>
+</div>
+
+<div id="app-view" class="app-shell" hidden>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="brand-mark">✦</span><span>peopleflow<span class="brand-dot">.</span></span></div>
+    <div class="workspace-switch"><span class="workspace-logo">P</span><span class="workspace-copy"><strong>PeopleFlow HR</strong><small id="workspace-role">Admin workspace</small></span><svg class="icon icon-small"><use href="#i-chevron"/></svg></div>
+    <div class="nav-label">WORKSPACE</div>
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <button class="nav-item active" data-view="dashboard"><svg class="icon"><use href="#i-grid"/></svg><span>Overview</span></button>
+      <button class="nav-item" data-view="employees"><svg class="icon"><use href="#i-users"/></svg><span>Employees</span></button>
+      <button class="nav-item" data-view="attendance"><svg class="icon"><use href="#i-calendar"/></svg><span>Attendance</span></button>
+      <button class="nav-item" data-view="leaves"><svg class="icon"><use href="#i-leave"/></svg><span>Leave requests</span><span id="sidebar-pending" class="nav-counter" hidden>0</span></button>
+      <button class="nav-item admin-only" data-view="accounts"><svg class="icon"><use href="#i-users"/></svg><span>User accounts</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-help"><span class="help-sparkle">✳</span><strong>SQLite + C++</strong><small>Public preview · sample data</small><button id="change-password-button" class="button ghost" style="width:100%;margin-top:12px">Change password</button></div>
+      <button class="sidebar-profile" id="logout-button" title="Sign out"><span class="profile-avatar" id="side-avatar">AD</span><span class="profile-info"><strong id="signed-name">Admin User</strong><small id="signed-role">Administrator</small></span><svg class="icon"><use href="#i-logout"/></svg></button>
+    </div>
+  </aside>
+  <div class="app-main">
+    <header class="topbar"><div class="topbar-left"><button class="mobile-menu" id="menu-toggle" aria-label="Toggle navigation"><svg class="icon"><use href="#i-menu"/></svg></button><span class="breadcrumb">Workspace</span><svg class="icon crumb-arrow"><use href="#i-chevron"/></svg><strong id="breadcrumb-title">Overview</strong></div><div class="topbar-right"><span class="live-indicator"><span></span> Interactive preview</span><div class="top-avatar" id="top-avatar">AD</div></div></header>
+    <main id="main-content" class="main-content"></main>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite" class="toast" hidden></div>
+<script src="./app.js" defer></script>
+</body>
+</html>
