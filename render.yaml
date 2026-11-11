@@ -1,24 +1,15 @@
-# PeopleFlow HRMS — Render Blueprint
-# WARNING: This Blueprint uses PAID plans for durable hosting. Review pricing
-# before approving in Render. Do not store real employee data until the security,
-# backup, legal, and recovery requirements in SECURITY_AND_LIMITATIONS.md are met.
+# PeopleFlow HRMS – no paid resources in this Blueprint.
+# Use a separate PostgreSQL database (for example, Neon's Free plan).
+# Never put a database password or connection string in source control.
 services:
   - type: web
     name: peopleflow-hrms-app
     runtime: docker
-    plan: 0.5c-512mb
+    plan: free
     healthCheckPath: /api/health
     envVars:
       - key: APP_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: peopleflow-hrms-postgres
-          property: connectionString
-# Render supplies RENDER_EXTERNAL_URL and RENDER_EXTERNAL_HOSTNAME automatically.
-# For a custom domain, set PUBLIC_BASE_URL and ALLOWED_HOSTS in Render settings.
-databases:
-  - name: peopleflow-hrms-postgres
-    databaseName: peopleflow_hrms
-    plan: 0.1c-256mb
-    ipAllowList: []
+        sync: false
+# No databases: this Blueprint does not create a paid Render Postgres instance.
