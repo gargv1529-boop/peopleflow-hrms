@@ -1,0 +1,24 @@
+# PeopleFlow HRMS — Render Blueprint
+# WARNING: This Blueprint uses PAID plans for durable hosting. Review pricing
+# before approving in Render. Do not store real employee data until the security,
+# backup, legal, and recovery requirements in SECURITY_AND_LIMITATIONS.md are met.
+services:
+  - type: web
+    name: peopleflow-hrms-app
+    runtime: docker
+    plan: 0.5c-512mb
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: peopleflow-hrms-postgres
+          property: connectionString
+# Render supplies RENDER_EXTERNAL_URL and RENDER_EXTERNAL_HOSTNAME automatically.
+# For a custom domain, set PUBLIC_BASE_URL and ALLOWED_HOSTS in Render settings.
+databases:
+  - name: peopleflow-hrms-postgres
+    databaseName: peopleflow_hrms
+    plan: 0.1c-256mb
+    ipAllowList: []

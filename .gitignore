@@ -1,34 +1,18 @@
-# PeopleFlow portfolio: publish source code, never employee data or credentials
-build/
-cmake-build-*/
-.vscode/
-.idea/
-*.exe
-*.o
-*.obj
-*.dll
-*.so
-*.dylib
-*.pdb
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
 *.log
-peopleflow_web
-
-# Runtime records, including migrated legacy text records and SQLite
-# Keep only an empty placeholder file in data/.
-data/*
-!data/.gitkeep
+.env
+.env.*
+!.env.example
 *.db
 *.sqlite
 *.sqlite3
-*.db-shm
 *.db-wal
-*.db-journal
-
-# Secrets, private keys, environment configuration
-.env
-.env.*
-*.pem
-*.key
-*.p12
-*.pfx
-secrets/
+*.db-shm
+data/*
+!data/.gitkeep
+build/
+*.exe
+.DS_Store

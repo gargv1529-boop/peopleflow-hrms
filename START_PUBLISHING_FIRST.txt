@@ -1,0 +1,10 @@
+PEOPLEFLOW HRMS — PUBLISH A REAL WEBSITE
+
+1. This ZIP is the online-deployment-ready FastAPI/PostgreSQL project, not the older C++ demo.
+2. Your laptop website at http://127.0.0.1:8765 is NOT accessible to other people online.
+3. On Windows, open DEPLOY_ONLINE_WINDOWS.md and follow Part A (GitHub Desktop).
+4. Then use Render's New → Blueprint workflow in Part B to create a public HTTPS site and managed database.
+5. The Render Blueprint uses PAID plans. Review charges before approval.
+6. The existing local SQLite data is NOT automatically copied to the public Postgres database.
+7. Never upload .env, data/*.db, real employee records, or passwords to GitHub.
+8. Only test with fictional records until independent production security/privacy review.

@@ -1,188 +1,147 @@
-<div align="center">
+# PeopleFlow HRMS — Real Full-Stack Website
 
-# PeopleFlow HRMS
+**A working multi-organization HR management web application, not a static GitHub Pages demo.**
 
-### C++17 · SQLite · Role-Based Access · Web Dashboard
+> Stack: **FastAPI (Python), SQLAlchemy, PostgreSQL in the cloud / SQLite locally, Argon2 passwords, HTML, CSS, JavaScript, Docker**. This replaces the earlier C++ localhost-only backend for the internet-facing service. The old C++ source is retained under `legacy_cpp/` for your portfolio history.
 
-**Human Resource Management System — B.Tech Portfolio Project**
+## What is real in this edition?
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-0d9488?style=for-the-badge)](https://gargv1529-boop.github.io/peopleflow-hrms/)
-[![C++17](https://img.shields.io/badge/Language-C%2B%2B17-00599C?style=for-the-badge)](https://isocpp.org/)
-[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?style=for-the-badge)](https://www.sqlite.org/)
+- **No demo users or hardcoded passwords**. A visitor creates a new organization and Admin account.
+- **Real sign-in, server sessions and password changes**. Password hashes use Argon2id; login session tokens are random, stored only as hashes in the database, and sent through HttpOnly cookies.
+- **Persistent database**. PostgreSQL is required for cloud production; SQLite works for individual local development.
+- **Separate organization data**. Employee, attendance, leave, audit, user account, dashboard and export requests are filtered by the signed-in user's organization at the backend.
+- **Admin, HR, Employee roles**, with real HTTP authorization checks, CSRF tokens, and validation.
+- **Employee management**, including archive/reactivate to preserve leave/attendance history.
+- **Daily attendance**, **leave requests and approvals**, **payroll estimates (not statutory payroll)**, **account creation**, **audit trail**, and **CSV exports**.
+- **Responsive frontend** based on the existing PeopleFlow look, but connected to the real server rather than a simulated browser session.
+- **Docker + Render deployment**, with a prepared Render Blueprint (`render.yaml`) that provisions the web service and PostgreSQL, and HTTPS at the platform's edge.
 
-**[Interactive Portfolio Demo](https://gargv1529-boop.github.io/peopleflow-hrms/) · [Source Code](https://github.com/gargv1529-boop/peopleflow-hrms)**
+**Important:** This is an operational full-stack application suitable for deploying as a **portfolio/limited beta**. It is **not independently security-audited** or ready to process real staff identity, payroll, or other sensitive HR data at scale. Production use still requires security testing, email verification and recovery, organization policies, documented privacy practices, backups, migrations, monitoring, and incident response. See `SECURITY_AND_LIMITATIONS.md`.
 
-</div>
+## Windows — run it on your laptop
 
-## Project overview
+1. Install **Python 3.11+** from <https://www.python.org/downloads/> and enable **Add Python to PATH**. You already installed MSYS2 for the older C++ version, but **this new cloud-ready backend uses Python** to handle web requests.
+2. Download and extract the `PeopleFlow_HRMS_REAL_Website.zip` file to a normal folder (for example Desktop).
+3. Double-click **`run_windows.bat`**. The script creates a private Python environment, installs its dependencies, and starts the server. The first run needs an internet connection.
+4. Visit **<http://127.0.0.1:8765>** in Chrome.
+5. Click **Create an organization**. Enter your organization name, your name, work email and a strong password of at least 12 characters.
+6. Your dashboard starts **empty**, because this is not a seeded demo. Click **Employees → Add employee** to store your first record. Admin can also create new team accounts under **User accounts**.
+7. Keep the terminal open while using the local version. Data survives restarts in `data/peopleflow_real.db`.
 
-PeopleFlow HRMS is a learning-focused human resource application demonstrating employee record management, attendance, leave approval, and role-based permissions using a local **C++17 HTTP backend**, a **SQLite database**, and a responsive **HTML/CSS/JavaScript** interface.
+To run from Windows PowerShell instead of the batch file:
 
-This repository includes **two different experiences**:
-
-1. **Public GitHub Pages demo (`docs/`)** — browser-only, interactive simulation with fictional employees and simulated Admin/HR/Employee permissions. It does **not** connect to a live server or SQLite database.
-2. **Local full-stack application (`src/`, `web/`)** — C++ server running on `127.0.0.1:8765` with SQLite persistence, server-side authorization, login sessions, and role-specific operations. This is *not* publicly hosted.
-
-> The public demo shows the UI and workflows. The C++ source demonstrates how the local database-backed version is implemented. Neither is intended as production HR software.
-
-## Features
-
-| Area | Local C++ + SQLite application |
-| --- | --- |
-| Accounts | Admin, HR and Employee login with role checks on the server |
-| Employees | Add, view, search, update and remove records |
-| Attendance | Record and view attendance; employees see their own records |
-| Leave requests | Submit, approve and reject requests with permissions |
-| Dashboard | Team headcount, departments, payroll estimates and pending leaves |
-| Data persistence | SQLite tables for employees, attendance, leaves and users |
-| Passwords | Salted PBKDF2-HMAC-SHA256 hashing using OpenSSL |
-| Tests | C++ HRMS core tests run with CTest / GitHub Actions |
-
-## Technology stack
-
-**C++17**, STL, SQLite3, OpenSSL, CMake, GCC / MSYS2, HTML5, CSS3, JavaScript, Git and GitHub Pages.
-
-### Architecture
-
-```text
-Local full-stack app
-Browser (web/) ──HTTP requests──> C++ server (src/web_server.cpp)
-                                       │
-                      Authentication, authorization & HRMS rules
-                                       │
-                                 SQLite database
-                              (data/peopleflow.db)
-
-Public portfolio preview
-GitHub Pages (docs/) ──> Static HTML/CSS/JS ──> Fictional browser-only data
+```powershell
+cd "C:\path\to\PeopleFlow_HRMS_REAL_Website"
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m uvicorn server.main:app --host 127.0.0.1 --port 8765
 ```
 
-## Try the public demo
+Open <http://127.0.0.1:8765>. If port 8765 is in use, change `--port 8765` to a free port and visit that port.
 
-**[Open PeopleFlow HRMS](https://gargv1529-boop.github.io/peopleflow-hrms/)**
+## Publish online — easiest route
 
-| Demo role | Email | Password |
-| --- | --- | --- |
-| Admin | `admin@peopleflow.demo` | `Demo@123` |
-| HR | `hr@peopleflow.demo` | `Demo@123` |
-| Employee | `employee@peopleflow.demo` | `Demo@123` |
+**Read [`DEPLOY_ONLINE_WINDOWS.md`](DEPLOY_ONLINE_WINDOWS.md)** for the exact GitHub Desktop → Render Blueprint steps, without needing Git commands. The project also includes `render.yaml` to link the FastAPI web service to PostgreSQL automatically. **Review hosting charges:** the default Blueprint uses paid web and database plans.
 
-The demo uses fictional records. These are *simulation credentials only*. Changes made in the public demo are local to the browser and do not update any database.
+Render supplies `RENDER_EXTERNAL_URL` and `RENDER_EXTERNAL_HOSTNAME`, and this project now reads those automatically for production security checks. You can override them with `PUBLIC_BASE_URL` / `ALLOWED_HOSTS` when attaching a custom domain.
 
-## Run the full C++ application on Windows
+## How to put your **real website** online (Render + PostgreSQL)
 
-1. Install [MSYS2](https://www.msys2.org/) and open **MSYS2 UCRT64**.
-2. Install build dependencies:
+GitHub Pages **cannot** host a Python/C++ server or a private shared database. **Your existing `github.io` page is a separate static demonstration, and it will not become this real website by copying HTML alone.**
 
-   ```bash
-   pacman -S --needed mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-sqlite3 mingw-w64-ucrt-x86_64-openssl
-   ```
+Use the full project as a **new GitHub repository** (recommended name: `peopleflow-real-hrms`) so you don't accidentally overwrite the existing GitHub Pages demo or the earlier C++ project. The code can still be linked from your original repository and profile.
 
-3. Clone this repo and open the **repository root** in VS Code.
-4. In a PowerShell terminal, run:
+1. Sign in to <https://github.com/> and create a **new empty repository** (no generated README). Upload **all files from this extracted folder** while keeping directories intact, except local `.venv/`, `data/*.db`, `.env` and secrets. Alternatively use the Git commands below.
+2. Sign in to <https://render.com/>. Create a **Postgres** database in a region close to your web service. Ensure the plan and backup settings meet your needs. Copy its **internal connection URL** from the dashboard; treat it like a password.
+3. Click **New → Web Service → connect GitHub repository**. Choose your new repository. Set **Language/Runtime: Docker**, **Dockerfile Path: `./Dockerfile`** and your desired plan/region. You can leave the Docker command at its default.
+4. In the web service's **Environment** settings, add:
 
-   ```powershell
-   .\run_dashboard_windows.bat
-   ```
+   | Variable | Example / guidance |
+   | --- | --- |
+   | `APP_ENV` | `production` |
+   | `DATABASE_URL` | Your Render Postgres **internal** database URL (secret; never commit) |
+   | `PUBLIC_BASE_URL` | `https://YOUR-SERVICE.onrender.com` |
+   | `ALLOWED_HOSTS` | `YOUR-SERVICE.onrender.com` |
 
-5. Open **http://127.0.0.1:8765** and keep the server terminal running.
+   Replace **YOUR-SERVICE** with the actual service hostname allocated by Render. `PUBLIC_BASE_URL` must have HTTPS and **no trailing slash**. `ALLOWED_HOSTS` is just the hostname, without `https://`. On a custom domain, list both approved hostnames separated by commas and set `PUBLIC_BASE_URL` to your primary actual site origin.
+5. Deploy the service. Render builds your Dockerfile, runs the server listening on the required port, and gives it a public HTTPS URL. Open the site's `/api/health` endpoint to confirm `{"ok":true,"data":{"status":"ok"}}`.
+6. Open the public homepage. Register a **new organization**. Records will be stored in Render PostgreSQL and accessible from other devices when you log into the same account.
+7. For a domain like `hrms.yourdomain.com`, configure Render **Custom Domains**, verify DNS, update `PUBLIC_BASE_URL` and `ALLOWED_HOSTS`, and redeploy.
 
-The first local launch creates `data/peopleflow.db` with *demo-only* Admin/HR accounts. New installations may have no employees yet; add a fictional employee and create a linked Employee login from the Admin interface. Default demo passwords are `Demo@123` **for local learning only**. Change passwords and do not use real personal records.
+**Hosting is not free by default.** Confirm current pricing, data retention, database backups and uptime of your selected Render plans. Never use the temporary filesystem on a web container to hold the live database. Render's PostgreSQL service is a separate persistent database.
 
-The console-only app remains available via `run_windows.bat`. It uses separate legacy text files and is not the same storage as the SQLite dashboard.
-
-### Linux / CMake (developers)
+### Git commands (Windows Git Bash / VS Code terminal)
 
 ```bash
-sudo apt-get install cmake g++ libsqlite3-dev libssl-dev
-cmake -S . -B build
-cmake --build build
-ctest --test-dir build --output-on-failure
-./build/peopleflow_web
+git init
+git add .
+git commit -m "PeopleFlow real full-stack HRMS"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/peopleflow-real-hrms.git
+git push -u origin main
 ```
 
-Launch the server from the repository root because it serves `web/` and stores data in `data/` relative to the working directory.
+Replace `YOUR-USERNAME` and make the repository on GitHub first. If `origin` is already configured, do not add it again. Never push database files or `.env` secrets.
 
-## Repository structure
+### Testing the cloud website
+
+Use two separate browsers/private windows to create two **different organizations** and confirm their employee, attendance, leave and account lists stay separate. Change an employee record in one browser, reload, and verify it remains. Close the browser, sign back in, and ensure the records persist. Test Admin, HR and Employee restrictions before inviting others.
+
+## Development, testing and source tree
+
+```bash
+python -m pip install -r requirements-dev.txt
+pytest -q tests/
+node --check web/app.js
+```
 
 ```text
-peopleflow-hrms/
-├── docs/                       # Public simulated GitHub Pages site
-│   ├── index.html
-│   ├── app.js
-│   ├── styles.css
-│   └── .nojekyll
-├── src/
-│   ├── Database.cpp/.hpp       # SQLite, accounts, password hashing, import
-│   ├── HRMS.cpp/.hpp           # HRMS domain logic and legacy support
-│   ├── web_server.cpp          # Local REST-like API and role enforcement
-│   └── main.cpp                # Legacy console app
-├── web/                        # Local C++ dashboard frontend
-├── tests/test_hrms.cpp         # C++ core tests
-├── data/.gitkeep               # Database created locally; never committed
-├── .github/workflows/ci.yml    # Build and test automation
-├── CMakeLists.txt
-├── run_dashboard_windows.bat
-├── run_dashboard_unix.sh
-├── run_windows.bat
-├── run_unix.sh
+PeopleFlow_HRMS_REAL_Website/
+├── server/main.py             # Real backend, SQLAlchemy schema, sessions, role checks, REST endpoints
+├── web/
+│   ├── index.html             # Actual login / registration / workspace page
+│   ├── styles.css             # Responsive design
+│   └── app.js                 # REST client, actions and dashboard
+├── tests/test_api.py          # HTTP integration tests and cross-organization isolation
+├── legacy_cpp/peopleflow_server.cpp  # Prior local C++ server (not deployed)
+├── data/.gitkeep              # Local database goes here, excluded from git
+├── Dockerfile                 # Cloud build
+├── requirements.txt           # Backend dependencies
+├── requirements-dev.txt       # Test dependencies
+├── run_windows.bat            # Windows launcher
+├── .github/workflows/ci.yml   # Build checks on GitHub
+├── .env.example               # Environment variable reference (not secrets)
+├── SECURITY_AND_LIMITATIONS.md
 └── README.md
 ```
 
-## Role permissions (local application)
+## API
 
-| Capability | Admin | HR | Employee |
-| --- | :---: | :---: | :---: |
-| View all employee records | Yes | Yes | No; own record only |
-| Create, edit or delete employee records | Yes | Yes | No |
-| Mark attendance | Yes | Yes | No |
-| View own attendance | Yes | Yes | Yes |
-| Submit leave request | Yes | Yes | Own request only |
-| Approve or reject leave | Yes | Yes | No |
-| Manage user accounts | Yes | No | No |
+- Account: `POST /api/register`, `POST /api/login`, `GET /api/me`, `POST /api/logout`, `POST /api/password`
+- Dashboard: `GET /api/dashboard`
+- Employees: `GET/POST /api/employees`, `PUT/DELETE /api/employees/{id}` (`DELETE` archives)
+- Attendance: `GET/POST /api/attendance`
+- Leave: `GET/POST /api/leaves`, `PUT /api/leaves/{id}`
+- Users and audit: `GET/POST /api/users` (Admin only), `GET /api/audit` (Admin only)
+- Reports: `GET /api/payroll`, `GET /api/export/employees`, `GET /api/export/attendance`
+- Uptime/database check: `GET /api/health`
 
-## Screenshots
+All POST/PUT/DELETE requests (except initial register/login) require an `X-CSRF-Token` header supplied by `/api/me`. All logged-in resources use an HttpOnly session cookie. HTML/frontend is never trusted for access control; backend checks roles and `org_id`.
 
-Add screenshots of the **fictional public demo** to `docs/screenshots/` and reference them here:
+## From the prior PeopleFlow project
 
-```markdown
-![PeopleFlow login page](docs/screenshots/login.png)
-![PeopleFlow dashboard](docs/screenshots/dashboard.png)
-![PeopleFlow employee directory](docs/screenshots/employees.png)
-```
+Your old Windows C++ program can continue running locally on port 8765, but **don't run the old and new servers on the same port simultaneously**. Quit the old black terminal before launching `run_windows.bat`.
 
-Do not publish screenshots showing real employee data.
+This new edition **does not automatically read or overwrite the old `peopleflow_v2.db`**, and does not migrate its sample login passwords. Start with a fresh account and your own fictional test organization. If you want to move your existing records later, build a reviewed importer with explicit mapping; don't paste DB files into the public GitHub repo.
 
-## Security and responsible use
+## Old GitHub Pages demo
 
-- **Local demo only:** the C++ server binds to loopback (`127.0.0.1`) and is not hardened for internet exposure.
-- **Fixed demo credentials** exist for convenient local evaluation; do not deploy this backend unchanged on a public server.
-- Never commit `data/peopleflow.db`, `.db-wal`/`.db-shm`, real employee text files, API secrets or private keys. The included `.gitignore` excludes them, but review staged files manually.
-- A production deployment needs security review, HTTPS, stronger authentication safeguards, audit logs, backup/recovery controls, input validation hardening and operational monitoring.
-- Payroll numbers are illustrative estimates; this is not a statutory payroll system.
+This real application uses its own FastAPI/PostgreSQL service, not GitHub Pages. If you no longer want the old browser-only demo published, wait until the public Render site works and then follow Part D of `DEPLOY_ONLINE_WINDOWS.md` to unpublish the GitHub Pages site without deleting your original source repository.
 
-## Future enhancements
+## Portfolio description
 
-Email invitations, leave balances, payroll export, audit trails, finer-grained access permissions, more automated integration/browser tests, and production deployment hardening.
+**PeopleFlow HRMS — Multi-Organization Full-Stack Web App** | FastAPI, SQLAlchemy, PostgreSQL, Argon2, JavaScript, Docker
 
-## Resume-ready summary
+Built an organization-isolated HRMS with company registration, authenticated role-based workspaces, persistent employee data, attendance and leave workflows, salary estimates, audit logs, CSV exports, security controls, automated API tests, and Docker-based cloud deployment.
 
-**PeopleFlow HRMS | C++17, SQLite, OpenSSL, HTML, CSS, JavaScript** — Built a local database-backed HR management application featuring employee records, attendance, leave approvals, authentication, and role-based authorization. Published a separate interactive browser demo using GitHub Pages for portfolio review.
-
----
-
-*Learning project built with AI assistance. Review, understand and personalize the code before presenting it as independently authored.*
-
-## Project Screenshots
-
-### Login Page
-![Login Page](screenshots/login.png)
-
-### Admin Dashboard
-![Admin Dashboard](screenshots/dashboard.png)
-
-### Employee Management
-![Employee Management](screenshots/employees.png)
-
-### Attendance Management
-![Attendance Management](screenshots/attendance.png)
+**Note:** The project can be deployed online using your own GitHub and hosting accounts. **Creating this source package does not automatically publish a live public URL**. You must complete the hosting deployment steps.

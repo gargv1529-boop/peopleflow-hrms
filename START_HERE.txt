@@ -1,0 +1,31 @@
+PEOPLEFLOW HRMS - REAL FULL-STACK WEBSITE
+=======================================
+
+This is NOT the old demo with fixed accounts. It is a new version with:
+- real organization registration, login and password changes
+- PostgreSQL support for internet hosting and SQLite for local development
+- backend-protected Admin/HR/Employee access
+- real employee, attendance, leave, and account records
+- Dockerfile for Render deployment
+
+FIRST TEST ON YOUR WINDOWS PC:
+1. Extract the ZIP into a normal folder.
+2. Install Python 3.11+ (https://www.python.org/downloads/).
+3. Double-click run_windows.bat.
+4. Open http://127.0.0.1:8765.
+5. Click Create an organization. Choose your OWN email and strong password.
+6. Add your first employee under Employees.
+
+FOR A PUBLIC ONLINE URL:
+1. Read README.md, section: How to put your real website online.
+2. Push this folder to a NEW GitHub repository.
+3. Host the Docker web service and a managed PostgreSQL database on Render.
+4. Configure APP_ENV, DATABASE_URL, PUBLIC_BASE_URL, and ALLOWED_HOSTS.
+5. Visit your actual HTTPS Render URL and register your company.
+
+IMPORTANT:
+- The source package does not itself create a public internet deployment.
+- Do not post your .env, database or passwords to GitHub.
+- Use synthetic data until full security/privacy review; this is a working pilot,
+  not certified production HR/payroll software.
+- The old local C++ demo database is not automatically migrated.
