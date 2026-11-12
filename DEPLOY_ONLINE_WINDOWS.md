@@ -1,87 +1,35 @@
-# Publish PeopleFlow HRMS on GitHub + Render
+# Deploy PeopleFlow HRMS — Render Free + Neon PostgreSQL
 
-These steps are for **Windows**. No MSYS2 or C++ compiler is needed for cloud deployment.
+This guide documents the **current portfolio deployment**. It is not a guarantee that every hosting feature will remain free indefinitely. Review Render and Neon usage limits before creating resources.
 
-## Before publishing
+## 1. GitHub
 
-1. Extract `PeopleFlow_HRMS_Online_Ready.zip`.
-2. Open the folder `PeopleFlow_HRMS_Online_Ready` (the one containing `render.yaml`, `Dockerfile`, `server` and `web`).
-3. **Never publish** `.venv/`, `data/*.db`, `.env`, passwords, `DATABASE_URL`, real employee data, or a screenshot containing private records. Those are excluded from this ZIP.
-4. Keep the existing local application and database as a backup. This is a **separate cloud database**; data you entered at `127.0.0.1:8765` is not automatically uploaded.
+Push the PeopleFlow source to `https://github.com/gargv1529-boop/peopleflow-hrms`. Keep `.env`, `.venv/`, `data/*.db`, and database credentials out of commits.
 
-## Part A — Put the new real app on GitHub using GitHub Desktop
+## 2. Neon database
 
-1. Open GitHub Desktop (already present in your Windows screenshots) and sign in to GitHub.
-2. Select **File → Add local repository... → Choose...** and select the extracted `PeopleFlow_HRMS_Online_Ready` folder.
-3. If GitHub Desktop says that folder is not a repository, choose **Create a Repository Here**. Set repository name to `peopleflow-hrms-fullstack` and create it.
-4. Write the commit summary `Publish real PeopleFlow HRMS full-stack app` and choose **Commit to main**.
-5. Click **Publish repository**. Choose a suitable public/private setting (public for a portfolio; only fictional data and code). Do not check in any secret files. Click Publish.
-6. Open your new repo, check `server/main.py`, `web/index.html`, `Dockerfile`, `render.yaml`, and `README.md` exist. Confirm that `.env` and database files are NOT shown.
+Create a PostgreSQL database in [Neon](https://console.neon.tech/) on a plan you're comfortable with. In the project dashboard, click **Connect** and copy the PostgreSQL connection URL. **Do not share it**: it contains your password. The URL often starts with `postgresql://` and has SSL parameters.
 
-**Alternative using Git Bash:** After creating an empty GitHub repo, open Git Bash inside the extracted project folder and run:
+## 3. Render service
 
-```bash
-git init
-git add .
-git status
-git commit -m "Publish real PeopleFlow HRMS full-stack app"
-git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/peopleflow-hrms-fullstack.git
-git push -u origin main
-```
+In [Render](https://dashboard.render.com/), connect the GitHub repository through **New → Blueprint**. Keep `main` and `render.yaml` (repository root). The current free-hosting Blueprint should create **one Docker web service** named `peopleflow-hrms-app` and **no separate Render database**.
 
-Use your real GitHub username. `git status` must not show database or `.env` files. If you use an existing Git repository, do not reinitialize it or overwrite its history; use GitHub Desktop to commit the changes normally.
+Before deploying, check that the Blueprint says `plan: free` and no paid resources are being created. If it asks for `DATABASE_URL`, paste the Neon URL in Render's private value field, not in the repository. For a service already created, use **PeopleFlow web service → Environment → Edit**.
 
-## Part B — Make the site public on Render
+Set `APP_ENV=production`; the application reads the Render-provided public hostname automatically. Custom domain users may need `PUBLIC_BASE_URL` and `ALLOWED_HOSTS` overrides.
 
-The `render.yaml` in this project provisions a FastAPI Docker web service and a private managed PostgreSQL instance. **Both default plans are paid**. Inspect the invoice/estimated charges before you approve anything. The plans were chosen to avoid free database expiry and service sleeping. If you're only exploring with fictional data, you can manually choose free tiers, but the database expires after 30 days and a free web service may spin down.
+## 4. Validate
 
-1. Open https://dashboard.render.com/ and sign in.
-2. Choose **New → Blueprint** (sometimes labelled **New Blueprint Instance**), authorize GitHub access, and select your `peopleflow-hrms-fullstack` repository.
-3. Render should detect `render.yaml`, propose the Docker web service `peopleflow-hrms-app` and Postgres `peopleflow-hrms-postgres`, and link `DATABASE_URL` automatically using the database's internal connection string.
-4. Check your chosen **plan, billing, region and database options**. Choose the same region for the app and database. Set a region appropriate to you before approving if desired (edit `render.yaml` to add the supported region string for both).
-5. Approve/Apply the Blueprint. Render builds the container, creates the DB and starts your real backend. Wait for the deploy status to show **Live**. Do not share credentials or private database connection strings.
-6. Open the **actual HTTPS URL** shown in Render for your web service; it will be a `*.onrender.com` address. Never invent the URL from the repository name.
-7. Visit `<your-url>/api/health`. Expected response: `{"ok":true,"data":{"status":"ok"}}`.
-8. Go to your site homepage and register a **new, fictional testing organization**. Test login, employee creation, attendance, leave approvals, reload and logout; also test that separate organizations cannot see each other's data.
+Deploy and inspect **Deploys / Logs**. A healthy startup includes a successful `GET /api/health` request. The portfolio application's public URL is:
 
-### Custom domain
+https://peopleflow-hrms-app.onrender.com
 
-Render provides an HTTPS subdomain automatically. To use your own purchased domain, configure **Custom Domains**, update DNS, and set these two environment variables on the web service (no quotes):
+If deployment fails, look at the **final** exception line in the logs. A message about a durable PostgreSQL URL indicates that `DATABASE_URL` is missing, malformed, or has been populated with placeholder text.
 
-```
-PUBLIC_BASE_URL=https://hrms.yourdomain.com
-ALLOWED_HOSTS=hrms.yourdomain.com,peopleflow-hrms-app.onrender.com
-```
+## 5. Check actual workflows
 
-Replace the Render hostname with your **actual** one. Render's public URL/hostname are read automatically when you don't set these values. The `PUBLIC_BASE_URL` should match the origin users visit when submitting forms. With custom domains, use a consistent canonical domain; verify registration and sign-in again after DNS changes.
+Using **fictional records only**, create an organization and Admin account, add employees, mark attendance, request/approve leave, sign out/in and confirm records remain. Test with a separate Employee account. Hiding an Admin button is not proof of API security.
 
-## Part C — Test before sharing with recruiters
+## Free-tier caveats
 
-- [ ] Hosted site loads over HTTPS and `/api/health` is healthy
-- [ ] Registration creates a new organization with zero initial employees
-- [ ] User password is never displayed in logs or repository
-- [ ] Employee create/edit/archive saves and survives logout and service restart
-- [ ] Attendance, leave decisions and audit entries persist
-- [ ] Admin/HR/Employee roles have distinct server-side permissions
-- [ ] Cross-organization records are not accessible
-- [ ] UI works on mobile and desktop, including errors and empty states
-- [ ] Test pipeline passes in GitHub Actions
-- [ ] Public README includes the real URL, screenshots using fictional data, and clear limitations
-
-## Important limitation
-
-A published beta is **not the same as a production HR platform**. For real customers' personal or salary data, arrange a security review, email verification and recovery, durable backups, privacy/terms, incident response, account deletion, migration support, and appropriate data-protection compliance. See `SECURITY_AND_LIMITATIONS.md`.
-
-Sources: https://render.com/docs/blueprint-spec , https://render.com/docs/environment-variables , https://render.com/docs/free , https://docs.github.com/en/desktop/adding-and-cloning-repositories/adding-an-existing-project-to-github-using-github-desktop
-
-## Part D — Retire the OLD GitHub Pages demo (only after the new site is live)
-
-Your previous demo was served from `https://gargv1529-boop.github.io/peopleflow-hrms/`. Publishing the new site does **not** automatically replace this old static page. After your Render deployment works and the portfolio link points to the new URL:
-
-1. Go to https://github.com/gargv1529-boop/peopleflow-hrms .
-2. In the existing repository find its **GitHub Pages** deployment (or use **Settings → Pages**).
-3. Use the Pages menu **Unpublish site** to remove the old demo deployment while preserving your historical source code. If needed, disable branch publishing by setting the Pages publishing branch to **None**.
-4. Update your GitHub profile README and resume to point to your **actual Render HTTPS URL**, not `127.0.0.1:8765` and not the old `github.io` preview.
-
-Do this only once your real cloud site works. GitHub's instructions: https://docs.github.com/en/pages/getting-started-with-github-pages/unpublishing-a-github-pages-site
+Render Free may spin down when idle and start slowly. Database quotas, retention and backup coverage are limited and can change. The portfolio setup is not suitable for real payroll data or high-availability business use without further security, privacy and operational controls.
